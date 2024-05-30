@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import YouTube from 'react-youtube';
 
-const YouTubePlayer = ({ videoId }) => {
+const YouTubePlayer = ({ videoId, onReady }) => {
+    const playerRef = useRef(null);
+
+    const handleReady = (event) => {
+        playerRef.current = event.target;
+        if (onReady) {
+            onReady(event.target);
+        }
+    };
+
     const opts = {
         height: '390',
         width: '640',
@@ -10,7 +19,7 @@ const YouTubePlayer = ({ videoId }) => {
         },
     };
 
-    return <YouTube videoId={videoId} opts={opts} />;
+    return <YouTube videoId={videoId} opts={opts} onReady={handleReady} />;
 };
 
 export default YouTubePlayer;
