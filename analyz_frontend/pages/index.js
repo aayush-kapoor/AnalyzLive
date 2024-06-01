@@ -58,7 +58,7 @@ const Home = () => {
                     type="text"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
-                    placeholder="Enter keyword"
+                    placeholder="Enter keyword or phrase"
                 />
                 <button type="submit">Submit</button>
             </form>

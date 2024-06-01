@@ -19,7 +19,7 @@ class KeywordSearchView(APIView):
 
     def post(self, request, *args, **kwargs):
         video_url = request.data['video_url']
-        keyword = request.data['keyword']
+        phrase = request.data['keyword']
 
         ydl_opts = {
             'format': 'bestaudio/best',
@@ -55,12 +55,20 @@ class KeywordSearchView(APIView):
 
         response = client.recognize(config=config, audio=audio)
 
+        phrase_words = phrase.lower().split()
         timestamps = []
+        words_buffer = []
+
         for result in response.results:
             alternative = result.alternatives[0]
-            for word in alternative.words:
-                if word.word.lower() == keyword.lower():
-                    timestamps.append(word.start_time.seconds)
+            for word_info in alternative.words:
+                words_buffer.append(word_info)
+                if len(words_buffer) > len(phrase_words):
+                    words_buffer.pop(0)
+                
+                buffer_phrase = ' '.join([w.word.lower() for w in words_buffer])
+                if buffer_phrase == phrase.lower():
+                    timestamps.append(words_buffer[0].start_time.seconds)
 
         if os.path.exists(audio_file_path):
             os.remove(audio_file_path)
